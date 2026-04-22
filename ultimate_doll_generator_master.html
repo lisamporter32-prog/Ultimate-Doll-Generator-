@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ultimate Doll Generator</title>
+  <style>
+    :root {
+      --bg1: #fff6fb;
+      --bg2: #f9efff;
+      --panel: #ffffff;
+      --line: #efd7f7;
+      --text: #4a2c57;
+      --muted: #8c6f96;
+      --accent: #d85fb2;
+      --accent2: #9e5bff;
+      --accent3: #ff92c9;
+      --shadow: 0 12px 30px rgba(172, 104, 183, 0.16);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffd5ec, #f0d8ff 50%, #ffe7f3);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .left, .right {
+      display: grid;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .mini-btn {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--accent2);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #e7c9f2;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 20px rgba(158, 91, 255, 0.18);
+    }
+
+    .btn.alt {
+      background: linear-gradient(135deg, #ff92c9, #d85fb2);
+    }
+
+    .btn.soft {
+      background: #fff;
+      color: var(--accent2);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .prompt-box {
+      white-space: pre-wrap;
+      background: #fffafd;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 220px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .favorites-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .favorite-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: #fffafd;
+    }
+
+    .favorite-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .favorite-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      position: relative;
+    }
+
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip span {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fffafd;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s ease;
+    }
+
+    .chip input:checked + span {
+      background: linear-gradient(135deg, #ffb3d8, #d8b4ff);
+      border-color: #d886d0;
+      color: #53255f;
+      box-shadow: 0 8px 18px rgba(216, 95, 178, 0.18);
+    }
+
+    .selected-count {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: bold;
+    }
+
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .fields { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+      .chip-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1>Ultimate Doll Generator</h1>
+      <p>Build premium, detailed character prompts with your layout, your sections, and one clean master version.</p>
+    </section>
+
+    <div class="grid">
+      <div class="left">
+        <section class="panel" data-section="subject">
+          <div class="section-title">
+            <h3>Subject Basics</h3>
+            <button class="mini-btn" data-reset-section="subject">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="artStyle">Art Style</label><select id="artStyle"></select></div>
+            <div class="field"><label for="ageGroup">Age Group</label><select id="ageGroup"></select></div>
+            <div class="field"><label for="subjectType">Subject Type</label><select id="subjectType"></select></div>
+            <div class="field"><label for="imageCount">Image Count</label><select id="imageCount"></select></div>
+            <div class="field"><label for="raceEthnicity">Race / Ethnicity</label><select id="raceEthnicity"></select></div>
+            <div class="field"><label for="skinTone">Skin Tone</label><select id="skinTone"></select></div>
+            <div class="field"><label for="skinFinish">Skin Finish</label><select id="skinFinish"></select></div>
+            <div class="field"><label for="bodyType">Body Type</label><select id="bodyType"></select></div>
+            <div class="field"><label for="inclusiveDetail">Disability / Inclusive Detail</label><select id="inclusiveDetail"></select></div>
+          </div>
+        </section>
+
+        <section class="panel" data-section="face">
+          <div class="section-title">
+            <h3>Face and Head Details</h3>
+            <button class="mini-btn" data-reset-section="face">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="eyeShape">Eye Shape</label><select id="eyeShape"></select></div>
+            <div class="field"><label for="eyeColor">Eye Color</label><select id="eyeColor"></select></div>
+            <div class="field"><label for="eyeStyle">Eye Style</label><select id="eyeStyle"></select></div>
+            <div class="field"><label for="eyebrowStyle">Eyebrow Style</label><select id="eyebrowStyle"></select></div>
+            <div class="field"><label for="noseStyle">Nose Style</label><select id="noseStyle"></select></div>
+            <div class="field"><label for="lipStyle">Lip Style</label><select id="lipStyle"></select></div>
+            <div class="field"><label for="lipColor">Lip Color</label><select id="lipColor"></select></div>
+            <div class="field"><label for="nailStyle">Nail Style</label><select id="nailStyle"></select></div>
+            <div class="field"><label for="nailColor">Nail Color</label><select id="nailColor"></select></div>
+            <div class="field"><label for="teethStyle">Teeth Style</label><select id="teethStyle"></select></div>
+            <div class="field"><label for="facialFeatures">Facial Features</label><select id="facialFeatures"></select></div>
+            <div class="field"><label for="makeupStyle">Makeup Style</label><select id="makeupStyle"></select></div>
+            <div class="field"><label for="makeupColor">Makeup Color</label><select id="makeupColor"></select></div>
+            <div class="field"><label for="facePiercings">Face Piercings</label><select id="facePiercings"></select></div>
+            <div class="field"><label for="tattooStyle">Tattoo Style</label><select id="tattooStyle"></select></div>
+            <div class="field"><label for="designer">Designer</label><select id="designer"></select></div>
+          </div>
+        </section>
+
+        <section class="panel" data-section="hair">
+          <div class="section-title">
+            <h3>Hair Details</h3>
+            <button class="mini-btn" data-reset-section="hair">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="hairType">Hair Type</label><select id="hairType"></select></div>
+            <div class="field"><label for="hairColor">Hair Color</label><select id="hairColor"></select></div>
+            <div class="field"><label for="hairLength">Hair Length</label><select id="hairLength"></select></div>
+            <div class="field"><label for="hairDetails">Hair Details</label><select id="hairDetails"></select></div>
+          </div>
+        </section>
+
+        <section class="panel" data-section="fashion">
+          <div class="section-title">
+            <h3>Clothing and Fashion</h3>
+            <button class="mini-btn" data-reset-section="fashion">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="outfit">Outfit</label><select id="outfit"></select></div>
+            <div class="field"><label for="outfitStyle">Outfit Style</label><select id="outfitStyle"></select></div>
+                        <div class="field"><label for="tops">Tops / Shirts</label><select id="tops"></select></div>
+            <div class="field"><label for="bottoms">Pants / Bottoms</label><select id="bottoms"></select></div>
+            <div class="field"><label for="pattern">Pattern</label><select id="pattern"></select></div>
+            <div class="field"><label for="shoeType">Shoe Type</label><select id="shoeType"></select></div>
+            <div class="field"><label for="brandShoes">Brand Shoes</label><select id="brandShoes"></select></div>
+            <div class="field"><label for="brandPurse">Brand Purse</label><select id="brandPurse"></select></div>
+            <div class="field"><label for="designerGlasses">Designer Glasses</label><select id="designerGlasses"></select></div>
+            <div class="field full">
+              <label>Accessories (click up to 6)</label>
+              <div id="accessoriesGrid" class="chip-grid"></div>
+              <div id="accessoriesCount" class="selected-count">0 of 6 selected</div>
+            </div>
+            <div class="field full">
+              <label>Props (click up to 6)</label>
+              <div id="propsGrid" class="chip-grid"></div>
+              <div id="propsCount" class="selected-count">0 of 6 selected</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" data-section="scene">
+          <div class="section-title">
+            <h3>Scene and Art Direction</h3>
+            <button class="mini-btn" data-reset-section="scene">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="profession">Profession or Role</label><select id="profession"></select></div>
+            <div class="field"><label for="scenario">Scenario</label><select id="scenario"></select></div>
+            <div class="field"><label for="action">Action</label><select id="action"></select></div>
+            <div class="field"><label for="expression">Expression</label><select id="expression"></select></div>
+            <div class="field"><label for="vibe">Vibe</label><select id="vibe"></select></div>
+            <div class="field"><label for="cameraAngle">Camera Angle</label><select id="cameraAngle"></select></div>
+            <div class="field"><label for="lighting">Lighting</label><select id="lighting"></select></div>
+            <div class="field"><label for="finish">Finish</label><select id="finish"></select></div>
+            <div class="field full"><label for="extraDetails">Extra Details</label><input id="extraDetails" type="text" placeholder="Realistic Face Detail, Glossy Finish, Clean Edges, High Detail" /></div>
+            <div class="field full"><label for="customAddOn">Custom Add On</label><input id="customAddOn" type="text" placeholder="Add any extra custom details here" /></div>
+          </div>
+        </section>
+
+        <section class="panel" data-section="pets">
+          <div class="section-title">
+            <h3>Pet Section</h3>
+            <button class="mini-btn" data-reset-section="pets">Reset Section</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label for="petType">Pet Type</label><select id="petType"></select></div>
+            <div class="field"><label for="petBreed">Pet Breed</label><select id="petBreed"></select></div>
+            <div class="field"><label for="petSize">Pet Size</label><select id="petSize"></select></div>
+            <div class="field"><label for="petStyle">Pet Style</label><select id="petStyle"></select></div>
+            <div class="field"><label for="petAccessories">Pet Accessories</label><select id="petAccessories"></select></div>
+            <div class="field"><label for="petOutfitMatch">Pet Outfit Match</label><select id="petOutfitMatch"></select></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="right">
+        <section class="panel">
+          <h2>Actions</h2>
+          <div class="toolbar">
+            <button class="btn" id="generateBtn">Generate Prompt</button>
+            <button class="btn alt" id="randomizeBtn">Randomize</button>
+            <button class="btn soft" id="copyBtn">Copy Prompt</button>
+            <button class="btn soft" id="clearBtn">Clear All</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Generated Prompt</h2>
+          <div id="promptOutput" class="prompt-box">Your prompt will appear here.</div>
+        </section>
+
+        <section class="panel">
+          <h2>Saved Prompt Name</h2>
+          <div class="fields">
+            <div class="field full"><label for="favoriteName">Prompt Name</label><input id="favoriteName" type="text" placeholder="Ex: Luxury Airport Doll" /></div>
+          </div>
+          <div class="toolbar" style="margin-top: 14px;">
+            <button class="btn" id="saveFavoriteBtn">Add to Favorites</button>
+            <button class="btn soft" id="exportFavoritesBtn">Export Favorites</button>
+            <button class="btn soft" id="resetFavoritesBtn">Reset Favorites</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Favorites</h2>
+          <div class="fields">
+            <div class="field full"><label for="favoriteSearch">Search Favorites</label><input id="favoriteSearch" type="text" placeholder="Search saved prompts" /></div>
+          </div>
+          <div id="favoritesList" class="favorites-list"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function withNone(arr) {
+      const list = ['None', ...arr];
+      return list.slice(0, 51);
+    }
+
+    const optionSets = {
+      subjectType: withNone(['Woman','Man','Girl','Boy','Toddler Girl','Toddler Boy','Teen Girl','Teen Boy','Baby Girl','Baby Boy','Pet','Couple','Twins','Triplets','Mom','Dad','Pregnant Woman','Bride','Groom','Princess','Queen','Boss Babe','Fashion Doll','Bratz Doll','Chibi Doll','Fantasy Girl','Fantasy Boy','Mermaid','Fairy','Angel','Ballerina','Student Girl','Student Boy','Nurse','Doctor','Teacher','Content Creator','Influencer','Pastor','Business Woman','Business Man','Cowgirl','Cowboy','Dancer','Cheerleader','Athlete','Artist','Singer','Rapper','Gamer']),
+      ageGroup: withNone(['Newborn','Infant','Baby','Toddler','Preschool','Kindergarten Age','Child','Preteen','Teen','Young Adult','Adult','Mature Adult','Senior','Mother','Father','Bride Age','Birthday Girl','Birthday Boy','Student Age','College Age','Young Mom','Working Mom','Business Age','Retired Adult','School Age','Twin Babies','Twin Toddlers','Teen Twins','Prom Age','Vacation Age','Luxury Adult','Church Lady','Church Gentleman','Boss Lady','Creative Adult','Soft Girl Era','Glam Adult','Elegant Adult','Playful Adult','Professional Adult','Stylish Teen','Girly Child','Luxury Child','Grown Woman','Grown Man','Cute Toddler Era','Princess Age','Hero Age','Fairy Age','Fantasy Age']),
+      imageCount: withNone(['1','2','3','4','5','6']),
+      raceEthnicity: withNone(['Black / African','African American','Brown Skin','Dark Skin Beauty','Light Skin','Caramel Skin','Mixed / Multiracial','Biracial Beauty','Latina','Afro Latina','Asian','East Asian','South Asian','Southeast Asian','White','Olive Skin','Caribbean','Jamaican Inspired','Haitian Inspired','Dominican Inspired','Puerto Rican Inspired','Cuban Inspired','Mexican Inspired','Brazilian Inspired','Native Inspired','Middle Eastern Inspired','Arab Inspired','Ethiopian Inspired','Nigerian Inspired','Ghanaian Inspired','Somali Inspired','Trinidad Inspired','Barbadian Inspired','Creole Inspired','Mixed Black and White','Mixed Black and Latina','Mixed Black and Asian','Golden Brown Beauty','Rich Ebony Beauty','Honey Brown Beauty','Soft Tan Beauty','Deep Bronze Beauty','Warm Beige Beauty','Neutral Beige Beauty','Mocha Beauty','Cocoa Beauty','Espresso Beauty','Mahogany Beauty','Sun Kissed Beauty']),
+      skinTone: withNone(['Porcelain','Fair','Fair Neutral','Fair Warm','Light','Light Golden','Light Beige','Light Medium','Medium','Medium Neutral','Medium Warm','Golden Medium','Golden Beige','Honey','Soft Tan','Tan','Tan Golden','Caramel','Warm Caramel','Brown','Rich Brown','Chestnut','Cocoa','Mocha','Deep Mocha','Bronze','Deep Bronze','Mahogany','Rich Ebony','Dark Cocoa','Espresso','Walnut','Toffee','Amber','Pecan','Maple','Almond','Olive','Olive Tan','Soft Brown','Cool Beige','Warm Beige','Neutral Beige','Rose Beige','Sun Glow','Golden Brown','Deep Honey','Velvet Brown','Radiant Bronze','Chocolate Brown']),
+      skinFinish: withNone(['Glossy Skin','HD Skin Detail','Soft Matte Skin','Radiant Skin','Airbrushed Skin','Glass Skin','Dewy Skin','Velvet Skin','Soft Glow Skin','Luxury Glow','Polished Skin','Smooth Skin','Natural Skin Finish','Highlight Glow','Golden Sheen','Flawless Skin','Soft Studio Glow','Premium Shine','Healthy Glow','Hydrated Glow','Ultra Smooth Skin','Light Reflective Glow','Subtle Glow','Satin Finish Skin','Skin Blur Effect','Soft Glam Glow','Warm Glow','Cool Glow','Rose Glow','Sunlit Skin','Bronzed Glow','Pearl Glow','Luminous Skin','High Definition Skin','Photo Ready Skin','Soft Focus Skin','Beauty Filter Finish','Editorial Glow','Cinematic Glow','Natural Shine','Fresh Face Glow','Rich Glow','Plush Skin','Refined Skin Texture','Silky Finish','Smooth Luxury Finish','Even Tone Finish','Face Card Glow','Premium Skin Detail','Custom Skin Finish']),
+      bodyType: withNone(['Petite','Slim','Curvy','Plus Size','Toned Body','Tall','Chunky Cute','Athletic','Thick','Hourglass','Pear Shape','Apple Shape','Rectangle Shape','Soft Curvy','Voluptuous','Fit Thick','Lean','Slim Thick','Full Figure','Mid Size','Short and Cute','Tall and Slim','Tall and Curvy','Wide Hips','Small Frame','Strong Build','Built','Abs','Soft Body','Petite Curvy','Petite Slim','Curvy Thick','Luxury Curves','Ballerina Build','Model Build','Fashion Figure','Chibi Chunky','Doll Proportions','Realistic Proportions','Plush Body Type','Tiny Body Type','Standard Build','Broad Shoulders','Narrow Shoulders','Long Legs','Short Legs','Maternity Bump','Pregnancy Glow','Custom Body']),
+      inclusiveDetail: withNone(['Wheelchair User','Autistic Awareness Theme','Hearing Aid','Prosthetic Leg','Service Dog','Cane User','Walker User','Crutches','White Cane','Cochlear Implant','Down Syndrome Representation','Vitiligo Representation','Birthmark Detail','Scar Representation','Medical Brace','Compression Sleeve','Feeding Tube Visibility','Adaptive Fashion','Sensory Friendly Theme','Neurodivergent Pride Theme','Disability Pride Theme','Visible Limb Difference','Arm Prosthetic','Leg Prosthetic','Mobility Scooter','Sign Language Pose','Seated Pose Design','Accessible Fashion Look','Therapy Dog Companion','Braille Book Prop','Adaptive Headphones','Inclusive Classroom Theme','Hospital Recovery Theme','Healing Journey Theme','Self Love Theme','Empowerment Theme','Visibility Cane Style','Adaptive Sports Theme','Inclusive Doll Design','Medical Patch','Hearing Device Glam','Wheelchair Glam','Boss Babe with Wheelchair','Princess with Wheelchair','Hero with Prosthetic','Soft Inclusive Portrait','Elegant Inclusive Look','Faith and Strength Theme','Custom Inclusive Detail','Adaptive Beauty Look']),
+      eyeShape: withNone(['Round','Hooded','Almond','Big Sparkle Eyes','Cat Eye','Doe Eyes','Wide Set Eyes','Close Set Eyes','Upturned Eyes','Downturned Eyes','Large Doll Eyes','Half Closed Eyes','Sleepy Eyes','Sharp Eyes','Soft Eyes','Princess Eyes','Bambi Eyes','Deep Set Eyes','Monolid','Big Anime Eyes','Small Almond Eyes','Luxurious Eyes','Wet Eyes','Glossy Eyes','Innocent Eyes','Sultry Eyes','Dramatic Eyes','Natural Eyes','Foxy Eyes','Heart Melting Eyes','Crescent Eyes','Lifted Eyes','Soft Hooded Eyes','Bold Round Eyes','Cute Chibi Eyes','Bratz Eyes','Star Eyes','Glitter Eyes','Lash Focus Eyes','Editorial Eyes','Bright Eyes','Sparkle Dot Eyes','Cartoon Wide Eyes','Realistic Wide Eyes','Elegant Eyes','Soft Glam Eyes','Princess Sparkle Eyes','Dreamy Wide Eyes','Premium Doll Eyes','Custom Eye Shape']),
+      eyeColor: withNone(['Brown','Dark Brown','Light Brown','Hazel','Green','Blue','Gray','Honey','Amber','Golden Hazel','Olive Green','Emerald','Ice Blue','Sky Blue','Ocean Blue','Chocolate Brown','Espresso','Warm Brown','Soft Brown','Golden Brown','Gray Green','Blue Gray','Dark Hazel','Light Hazel','Violet','Purple','Teal','Aqua','Silver','Black','Rich Brown','Cinnamon','Copper','Topaz','Champagne','Sage','Sea Green','Icy Gray','Midnight Blue','Moss Green','Sunlit Hazel','Cat Eye Green','Glossy Brown','Dreamy Gray','Caramel Brown','Soft Honey','Warm Amber','Luxury Hazel','Bright Blue','Custom Eye Color']),
+      eyeStyle: withNone(['Dreamy Eyes','Wet Look Eyes','Soft Glam Eyes','Doll Eyes','Smokey Eyes','Innocent Eyes','Sultry Eyes','Sparkly Eyes','Glossy Eyes','Big Lash Eyes','Soft Focus Eyes','Bratz Eyes','Chibi Eyes','Anime Eyes','Princess Eyes','Luxury Eyes','Wide Awake Eyes','Sleepy Glam Eyes','Flirty Eyes','Bold Eyes','Natural Eyes','Editorial Eyes','High Drama Eyes','Romantic Eyes','Cute Eyes','Bambi Eyes','Shimmer Eyes','Glass Eyes Effect','Soft Matte Eyes','Glam Eyes','Glitter Lid Eyes','Golden Highlight Eyes','Clean Girl Eyes','Sharp Wing Eyes','Soft Wing Eyes','Halo Eyes','Studio Ready Eyes','Camera Ready Eyes','Photo Finish Eyes','Heart Eyes','Starburst Eyes','Precious Eyes','Confident Eyes','Elegant Eyes','Playful Eyes','Soft Brown Eyes Makeup','Lash Extension Eyes','Premium Doll Eye Look','Luxury Shine Eyes','Custom Eye Style']),
+      eyebrowStyle: withNone(['Natural Brows','Soft Arch','Bold Brows','Feathered Brows','Sculpted Brows','Fluffy Brows','Straight Brows','High Arch Brows','Thin Brows','Thick Brows','Clean Brows','Sharp Brows','Soft Defined Brows','Baby Doll Brows','Bratz Brows','Chibi Brows','Glam Brows','Laminated Brows','Classic Brows','Rounded Brows','Lifted Brows','Natural Full Brows','Soft Full Brows','Elegant Brows','Minimal Brows','Luxury Brows','Boss Babe Brows','Princess Brows','Studio Brows','Editorial Brows','Polished Brows','Dramatic Brows','Soft Tapered Brows','Thin Arch Brows','Dark Defined Brows','Warm Brown Brows','Curved Brows','Long Tail Brows','Short Tail Brows','Textured Brows','Perfect Brows','Premium Brows','Flawless Brows','Pretty Brows','Cute Brows','Sweet Brows','Confident Brows','Smooth Brows','Signature Brows','Custom Brow Style']),
+      noseStyle: withNone(['Elegant Nose','Button Nose','Slim Nose','Soft Rounded Nose','Straight Nose','Small Nose','Defined Nose','Wide Nose','Cute Nose','Refined Nose','Sculpted Nose','Natural Nose','Lifted Nose','Baby Doll Nose','Bratz Nose','Chibi Nose','Princess Nose','Soft Button Nose','Short Nose','Long Nose','Balanced Nose','Delicate Nose','Strong Nose','Classic Nose','Narrow Nose','Rounded Tip Nose','Sharp Tip Nose','Soft Glam Nose','Luxury Nose','Pretty Nose','Heart Face Nose','Smooth Nose Bridge','Defined Nose Bridge','Camera Ready Nose','Premium Nose Shape','Cute Rounded Nose','Soft Triangle Nose','Natural Bridge Nose','Tiny Nose','Medium Nose','Bold Nose','Realistic Nose','Polished Nose','Sweet Nose','Perfect Nose','Face Card Nose','Beauty Nose','Editorial Nose','Soft Beauty Nose','Custom Nose Style']),
+      lipStyle: withNone(['Full Lips','Juicy Lips','Glossy Lips','Soft Nude Lips','Heart Shaped Lips','Plush Lips','Pouty Lips','Defined Lips','Natural Lips','Small Lips','Medium Lips','Wide Lips','Gloss Bomb Lips','Hydrated Lips','Luxury Lips','Princess Lips','Bratz Lips','Chibi Lips','Cupid Bow Lips','Soft Rounded Lips','Bold Lips','Perfect Pout','Pretty Lips','Sweet Lips','Soft Pink Lips','Rich Gloss Lips','Lined Lips','Overlined Lips','Velvet Lips','Matte Glam Lips','Shiny Lips','Gloss Drip Lips','Camera Ready Lips','Premium Lips','Rose Petal Lips','Smooth Lips','Plumped Lips','Soft Full Lips','Kissable Lips','Cute Doll Lips','Polished Lips','Statement Lips','Refined Lips','Beauty Lips','Soft Ombre Lips','Gloss Shine Lips','High Detail Lips','Flawless Lips','Face Card Lips','Custom Lip Style']),
+      lipColor: withNone(['Red','Nude Pink','Rose','Berry','Gloss Clear','Mauve','Chocolate','Soft Brown','Deep Plum','Cherry Red','Ruby','Wine','Hot Pink','Baby Pink','Barbie Pink','Peach','Coral','Rose Gold Gloss','Champagne Gloss','Honey Nude','Mocha Nude','Caramel Nude','Toffee Gloss','Cocoa Gloss','Deep Red','Maroon','Burgundy','Soft Peach','Bubblegum Pink','Light Mauve','Cool Nude','Warm Nude','Terracotta','Burnt Rose','Soft Coral','Dusty Rose','Pink Nude','Mink Nude','Bronze Gloss','Clear Sparkle','Gold Shimmer','Glossy Cherry','Luxury Nude','Princess Pink','Pretty Peach','Cinnamon Gloss','Deep Berry','Rosewood','High Shine Red','Custom Lip Color']),
+      nailStyle: withNone(['Long Acrylic Nails','Short Natural Nails','French Tips','Rhinestone Nails','Ombre Nails','Press-On Nails','Luxury Nail Set','Matte Nails','Glossy Nails','Square Nails','Coffin Nails','Almond Nails','Stiletto Nails','Round Nails','Gel Nails','Acrylic Fill Nails','Glitter Nails','Chrome Nails','Mirror Nails','Holographic Nails','Pink and White Nails','Nude Nails','Red Nails','Black Nails','White Nails','Gold Foil Nails','Marble Nails','Swirl Design Nails','Abstract Nails','Floral Nails','Butterfly Nails','Heart Nails','Gemstone Nails','Diamond Nails','3D Nails','Encapsulated Nails','Designer Inspired Nails','LV Inspired Nails','Gucci Inspired Nails','Chanel Inspired Nails','Drip Nails','Cartoon Nails','Character Nails','Seasonal Nails','Holiday Nails','Birthday Nails','Soft Girl Nails','Boss Babe Nails','Luxury Glam Nails','Custom Nail Design']),
+      nailColor: withNone(['Red','Cherry Red','Wine Red','Burgundy','Hot Pink','Baby Pink','Barbie Pink','Soft Pink','Nude','Mocha Nude','Caramel Nude','Peach','Coral','Orange','Burnt Orange','Yellow','Neon Yellow','Green','Olive Green','Emerald','Mint Green','Blue','Sky Blue','Royal Blue','Navy Blue','Purple','Lavender','Lilac','Violet','Black','Matte Black','White','Off White','Gray','Silver','Chrome Silver','Gold','Rose Gold','Glitter Gold','Bronze','Champagne','Holographic','Ombre Pink','Ombre Nude','French White Tips','French Color Tips','Clear Gloss','Diamond Shine','Custom Nail Color']),
+      teethStyle: withNone(['Bright White Teeth','Gold Tooth Accent','Diamond Grill','Silver Grill','Rose Gold Grill','Perfect Smile','Soft Smile Teeth','Closed Smile','Gap Smile','Single Gold Tooth','Top Grill','Bottom Grill','Full Grill','Tiny Teeth Detail','Natural Teeth','Shiny Teeth','Gloss Smile','Sparkle Smile','Smile With Dimples','Subtle Teeth Show','Big Smile','Soft Closed Lip Smile','Camera Ready Smile','Luxury Smile','Princess Smile','Sweet Smile','Playful Smile','Cute Smile','Premium Smile','Polished Smile','Tooth Gem','Double Tooth Gem','Diamond Tooth Accent','White Hollywood Smile','Glossy Smile','Refined Smile','Rich Smile','Photo Finish Smile','Perfect Alignment','Chibi Smile','Bratz Smile','Soft Grin','Big Grin','Elegant Smile','Friendly Smile','Confident Smile','Pretty Smile','Flirty Smile','Boss Smile','Custom Teeth Style']),
+      facialFeatures: withNone(['Long Lashes','Dimples','Freckles','Soft Cheekbones','High Cheekbones','Baby Face','Sharp Jawline','Soft Jawline','Full Cheeks','Slim Face','Heart Face','Oval Face','Round Face','Defined Chin','Beauty Mark','Mole Detail','Rosy Cheeks','Blush Cheeks','Smooth Face','Soft Glam Face','Bratz Face','Chibi Face','Realistic Face Detail','Princess Face','Boss Babe Face','Wide Smile','Full Lashes','Bottom Lashes','Long Chin','Cute Ears','Small Ears','Defined Ears','Glow Cheeks','Face Card Features','Elegant Face','Cute Personality Face','Soft Face Detail','Youthful Face','Warm Expression Face','Camera Ready Face','Premium Detail Face','Polished Face','Luxury Face','Angel Face','Doll Face','Pretty Face','Confident Face','Sweet Face','Playful Face','Custom Facial Feature']),
+      makeupStyle: withNone(['No Makeup','Everyday Glam','Full Glam','Princess Glam','Smokey Eye Glam','Soft Glam','Natural Glam','Bold Glam','Clean Girl Makeup','Luxury Makeup','Editorial Makeup','Prom Glam','Date Night Glam','Birthday Glam','Glossy Glam','Soft Matte Glam','Bridal Glam','Golden Glam','Rose Gold Glam','Neutral Glam','Bronze Glam','Pink Glam','Peach Glam','Brown Glam','Glitter Glam','Cut Crease Glam','Halo Eye Glam','Classic Makeup','Rich Girl Makeup','Boss Babe Makeup','Pretty Girl Makeup','Cute Glam','Church Glam','Vacation Glam','Beach Glam','Winter Glam','Spring Glam','Summer Glow Glam','Fall Glam','High Fashion Makeup','Bratz Makeup','Chibi Makeup','Soft Princess Makeup','Diamond Glow Makeup','Lash Focus Makeup','Gloss Skin Makeup','Camera Ready Makeup','Premium Seller Makeup','Luxury Shine Makeup','Custom Makeup Style']),
+      makeupColor: withNone(['Gold','Rose Gold','Champagne','Neutral Brown','Bronze','Soft Pink','Mauve','Peach','Coral','Berry','Chocolate','Copper','Silver','Lavender','Purple','Blue','Emerald','Olive','Burgundy','Wine','Caramel','Honey','Toffee','Mocha','Cocoa','Amber','Sunset','Warm Nude','Cool Nude','Icy Pink','Baby Pink','Hot Pink','Dusty Rose','Terracotta','Burnt Orange','Soft Gold','Yellow Gold','White Gold','Plum','Fuchsia','Rust','Sage','Seafoam','Teal','Aqua','Pearl','Diamond Glow','Rich Bronze','Soft Champagne','Custom Makeup Color']),
+      facePiercings: withNone(['Nose Ring','Lower Lip Ring','Eyebrow Piercing','Septum Ring','Stud Nose Piercing','Double Nose Piercing','Lip Stud','Monroe Piercing','Snake Bite Piercing','Bridge Piercing','Medusa Piercing','Vertical Labret','Nostril Hoop','Nostril Stud','Diamond Nose Ring','Gold Nose Ring','Silver Nose Ring','Rose Gold Nose Ring','Tiny Nose Stud','Cute Piercing','Bold Piercing','Luxury Piercing','Minimal Piercing','Princess Nose Stud','Bratz Piercing','Chibi Piercing','Soft Glam Piercing','Pretty Piercing','Double Hoop Nose','Single Hoop Nose','Stud and Hoop Combo','Septum and Hoop Combo','Lower Lip Stud','Brow Stud','Tiny Diamond Stud','Gold Stud','Silver Stud','Gem Piercing','Sparkle Piercing','Elegant Piercing','Refined Piercing','Face Jewelry Accent','Sweet Piercing','Boss Babe Piercing','Cute Nose Hoop','Premium Face Piercing','Soft Piercing Look','No Face Jewelry','Custom Piercing','Delicate Stud']),
+      tattooStyle: withNone(['Fine Line Tattoo','Micro Tattoo','Butterfly Tattoo','Rose Tattoo','Heart Tattoo','Star Tattoo','Moon Tattoo','Sun Tattoo','Cross Tattoo','Angel Wings Tattoo','Name Tattoo','Script Tattoo','Sleeve Tattoo','Half Sleeve Tattoo','Full Back Tattoo','Shoulder Tattoo','Collarbone Tattoo','Chest Tattoo','Hand Tattoo','Finger Tattoo','Neck Tattoo','Leg Tattoo','Thigh Tattoo','Ankle Tattoo','Wrist Tattoo','Spine Tattoo','Floral Tattoo','Snake Tattoo','Lion Tattoo','Crown Tattoo','Praying Hands Tattoo','Bible Verse Tattoo','Cloud Tattoo','Dove Tattoo','Cherry Tattoo','Money Tattoo','Butterfly Sleeve','Minimalist Tattoo','Bold Blackwork Tattoo','Soft Feminine Tattoo','Luxury Tattoo','Tiny Symbol Tattoo','Heart Lock Tattoo','Diamond Tattoo','Starburst Tattoo','Barbed Wire Tattoo','Fairy Tattoo','Angel Number Tattoo','Custom Ink Design','No Tattoo']),
+      designer: withNone(['Gucci','Dior','Chanel','Prada','Louis Vuitton','Versace','Balenciaga','Fendi','Valentino','Hermes','Burberry','Miu Miu','YSL','Givenchy','Dolce & Gabbana','Bottega Veneta','Tom Ford','Jacquemus','Celine','Moncler','Alexander McQueen','Christian Louboutin','Jimmy Choo','Ferragamo','Tory Burch','Marc Jacobs','Michael Kors','Coach','Kate Spade','Off-White','Lanvin','Cartier','Bvlgari','Tiffany & Co.','Rolex','Swarovski','Golden Goose','Canada Goose','Loewe','Goyard','Staud','Rebecca Minkoff','Dooney & Bourke','Brahmin','MCM','Aldo Luxe','Nine West Luxe','Juicy Couture','Betsey Johnson','Custom Designer']),
+      hairType: withNone(['Locs','Twists','Braids','Puff Ponytail','Finger Waves','Silk Press','Curly Bob','Sleek Bun','High Ponytail','Low Ponytail','Box Braids','Knotless Braids','Passion Twists','Marley Twists','Goddess Braids','Cornrows','Afro','Curly Afro','Wash and Go','Pixie Cut','Bob Cut','Long Straight Hair','Body Wave','Loose Curls','Tight Curls','Wand Curls','Space Buns','Half Up Half Down','Top Knot','Bantu Knots','French Roll','Side Ponytail','Bubble Ponytail','Dread Bun','Loc Ponytail','Soft Waves','Crimped Hair','Beach Waves','Flip Ends','Layered Cut','Fringe Bangs','Curtain Bangs','Side Bangs','Deep Side Part','Middle Part Hair','Updo','Princess Curls','Voluminous Curls','Mermaid Waves','Custom Hair Type']),
+      hairColor: withNone(['Black','Dark Brown','Light Brown','Auburn','Burgundy','Honey Blonde','Jet Black','Brown Black','Chestnut','Chocolate Brown','Mocha Brown','Caramel Brown','Golden Brown','Copper','Ginger','Strawberry Blonde','Ash Blonde','Platinum Blonde','Champagne Blonde','Dirty Blonde','Honey Brown','Warm Brown','Cool Brown','Red','Wine Red','Cherry Red','Rose Gold','Pink','Hot Pink','Lavender','Purple','Lilac','Blue','Teal','Aqua','Emerald','Silver','Gray','White Blonde','Ombre Brown Blonde','Black with Blonde Highlights','Brown with Caramel Highlights','Burgundy Highlights','Money Piece Blonde','Honey Highlights','Face Framing Highlights','Sun Kissed Brown','Cinnamon Brown','Soft Black','Custom Hair Color']),
+      hairLength: withNone(['Bald','Buzz Cut','Very Short','Short','Short Bob','Chin Length','Neck Length','Shoulder Length','Collarbone Length','Medium','Medium Long','Long','Very Long','Waist Length','Hip Length','Floor Length','Pixie Length','Ear Length','Jaw Length','Lob Length','Bra Strap Length','Mid Back Length','Low Back Length','Knee Length Fantasy','Short Curly Length','Medium Curly Length','Long Curly Length','Short Locs','Medium Locs','Long Locs','Extra Long Locs','Short Braids','Medium Braids','Long Braids','Extra Long Braids','Short Ponytail','Medium Ponytail','Long Ponytail','Extra Long Ponytail','Short Twists','Medium Twists','Long Twists','Extra Long Twists','Short Waves','Medium Waves','Long Waves','Princess Long','Doll Length','Mermaid Length','Custom Hair Length']),
+      hairDetails: withNone(['Laid Edges','Baby Hairs Styled','Defined Curls','Volume Boost','Side Part','Middle Part','Deep Side Part','Swooped Bangs','Curled Ends','Straight Ends','Wet Look Hair','Glossy Hair','Natural Texture','Silky Texture','Fluffy Volume','Big Hair Energy','Tiny Braids Detail','Beads in Hair','Hair Charms','Gold Cuffs','Silver Cuffs','Rose Gold Cuffs','Butterfly Clips','Barrettes','Headband','Bow Detail','Ribbon Detail','Flower Clips','Pearl Clips','Bun Wrap','Loc Jewelry','Braided Baby Hairs','Loose Tendrils','Face Framing Pieces','Layered Front Pieces','High Volume Roots','Slicked Down','Soft Frizz','Perfectly Defined Edges','Blowout Texture','Braided Part Pattern','Heart Part','Zigzag Part','Color Streaks','Highlight Pieces','Ombre Ends','Shadow Root','Bouncy Finish','Luxury Hair Shine','Custom Hair Detail']),
+      outfit: withNone(['Business Casual','Streetwear','Luxury','Hip Hop Glam Outfit','Ballerina Outfit','Airport Travel Look','Church Dress','Birthday Outfit','Prom Dress','Vacation Set','Cozy Lounge Set','Denim Set','Boss Babe Suit','Pajama Set','Athleisure Set','Cowgirl Outfit','Cowboy Outfit','Princess Gown','Mermaid Outfit','Fairy Dress','Cheer Outfit','School Uniform','Nurse Scrubs','Doctor Coat','Teacher Outfit','Content Creator Fit','Date Night Dress','Winter Coat Look','Fall Fashion Look','Spring Floral Outfit','Summer Shorts Set','Beachwear','Wedding Guest Dress','Bride Look','Baby Shower Dress','Maternity Outfit','Maternity Dress','Maternity Lounge Set','Tracksuit','Luxury Robe','Fashion Nova Inspired Fit','Club Outfit','Elegant Skirt Set','Soft Girl Outfit','Preppy Outfit','Y2K Outfit','Retro 70s Outfit','90s Streetwear','Rhinestone Outfit','Jean Dress','Jumpsuit']),
+      outfitStyle: withNone(['Casual','Luxury','Bold','Girly','Professional','Soft Girl','Boss Babe','Street Chic','Elegant','Classy','Cute','Playful','Trendy','Y2K','Retro','Edgy','Glam','Princess','Modest','Church Ready','Vacation','Beachy','Sporty','Athleisure','Cozy','Business','Editorial','High Fashion','Celebrity Style','Urban','Romantic','Date Night','Birthday Glam','Prom Queen','Festival','Western','Cowgirl Chic','Denim Luxe','Bratz Fashion','Chibi Fashion','Sweet Style','Preppy','Minimal','Maximalist','Fancy','Pretty','Soft Glam','Luxury Shine','Maternity Style','Baby Shower Chic','Custom Style']),
+      tops: withNone(['Tank Top','Flannel Shirt','Blouse','Cropped Tee','Graphic Tee','Button Down Shirt','Bodysuit','Corset Top','Sweater','Cardigan','Blazer','Denim Jacket','Leather Jacket','Puffer Jacket','Tube Top','Halter Top','Off Shoulder Top','Long Sleeve Shirt','Short Sleeve Tee','Ruffle Blouse','Lace Top','Sequin Top','Satin Top','Turtleneck','Wrap Top','Peplum Top','Crop Hoodie','Zip Hoodie','Sports Bra Top','Mesh Top','Polo Shirt','School Shirt','Nurse Top','Scrub Top','Cowgirl Top','Western Fringe Top','Ballerina Leotard','Princess Bodice','Band Tee','Luxury Silk Shirt','Oversized Tee','Fitted Tee','Ribbed Top','Baby Tee','Button Crop Top','Bustier','Plaid Shirt','Jean Shirt','Glitter Top','Custom Top']),
+      bottoms: withNone(['Straight Leg Pants','Bell Bottoms','Jeans','Skirt','Mini Skirt','Midi Skirt','Maxi Skirt','Shorts','Biker Shorts','Wide Leg Pants','Cargo Pants','Joggers','Leggings','Flare Pants','Palazzo Pants','Dress Pants','Slacks','Ripped Jeans','Skinny Jeans','Bootcut Jeans','Denim Shorts','Pleated Skirt','Pencil Skirt','Tulle Skirt','Tennis Skirt','Layered Skirt','Sequined Skirt','Leather Pants','Satin Pants','Sweatpants','Track Pants','High Waist Jeans','Low Rise Jeans','Capri Pants','Culottes','Tutu','Scrub Pants','Cowgirl Fringe Bottoms','Western Skirt','Luxury Trousers','Printed Pants','Plaid Pants','Tube Skirt','Jean Skirt','Cargo Skirt','Knit Pants','Fluffy Skirt','Princess Ball Skirt','Party Shorts','Custom Bottoms']),
+      pattern: withNone(['Denim','Denim Mix','Plaid','Rainbow','Cow Print','Leopard Print','Zebra Print','Polka Dot','Floral','Rose Print','Butterfly Print','Heart Print','Camouflage','Tie Dye','Glitter Print','Sequin Pattern','Solid Color','Striped','Checkered','Paisley','Marble Print','Cloud Print','Star Print','Sunflower Print','Cherry Print','Luxury Monogram','Snake Print','Metallic Pattern','Velvet Texture','Satin Shine','Gold Foil Pattern','Silver Foil Pattern','Rhinestone Pattern','Pearl Pattern','Tropical Print','Abstract Print','Watercolor Print','Y2K Print','Retro Print','Cowgirl Print','Western Print','Princess Print','Angel Print','Soft Ombre','Color Block','Barbie Inspired Print','Graffiti Print','Patchwork Print','Custom Pattern','No Pattern']),
+      shoeType: withNone(['Sneakers','Heels','Boots','Dress Shoes','Flats','Sandals','Slides','Stilettos','Platform Heels','Chunky Heels','Ankle Boots','Knee High Boots','Cowgirl Boots','Combat Boots','Loafers','Mary Janes','Ballet Flats','Running Shoes','Tennis Shoes','High Tops','Low Tops','Open Toe Heels','Strappy Heels','Pumps','Wedges','Espadrilles','Slip Ons','Mules','Slippers','Fuzzy Slippers','Rain Boots','Work Boots','Luxury Sandals','Designer Sneakers','Princess Heels','Sparkle Heels','Gladiator Sandals','Thigh High Boots','Platform Boots','Kitten Heels','Pointed Toe Heels','Rounded Toe Flats','Chunky Sneakers','Skater Shoes','School Shoes','Church Shoes','Beach Sandals','Dressy Sandals','Rhinestone Heels','Custom Shoes']),
+      brandShoes: withNone(['Jordan','Dior','Gucci','Nike','Louis Vuitton','Chanel','Prada','Balenciaga','Yeezy','Adidas','Puma','Converse','Vans','Christian Louboutin','Jimmy Choo','Steve Madden','Michael Kors','Coach','Fendi','Versace','Givenchy','Valentino','Dolce & Gabbana','Hermes','Off-White','Alexander McQueen','New Balance','Reebok','Skechers','Crocs','UGG','Manolo Blahnik','Bottega Veneta','Golden Goose','Burberry','Tory Burch','Aldo','Nine West','Dr. Martens','Timberland','Marc Jacobs','Kate Spade','Fila','ASICS','Miu Miu','Tom Ford','Lanvin','Moncler','Salvatore Ferragamo','Custom Brand']),
+      brandPurse: withNone(['Coach','Gucci','Louis Vuitton','Prada','Chanel','Dior','Michael Kors','Kate Spade','Fendi','Versace','Valentino','Burberry','Hermes','Tory Burch','Marc Jacobs','MCM','Balenciaga','YSL','Givenchy','Celine','Bottega Veneta','Dolce & Gabbana','Aldo','Steve Madden','Dooney & Bourke','Guess','Tom Ford','Miu Miu','Rebecca Minkoff','Longchamp','Brahmin','Telfar','Jacquemus','Goyard','Off-White','Alexander Wang','Betsey Johnson','Juicy Couture','Nine West','River Island','Loewe','Mulberry','Moncler','Ferragamo','Oscar de la Renta','Christian Louboutin','Jimmy Choo','Staud','Luxury Tote','Custom Purse']),
+      designerGlasses: withNone(['Ray-Ban','Gucci','Prada','Chanel','Dior','Versace','Louis Vuitton','Tom Ford','Burberry','Fendi','Coach','Michael Kors','Dolce & Gabbana','Miu Miu','YSL','Balenciaga','Cartier','Bvlgari','Tiffany & Co.','Jimmy Choo','Marc Jacobs','Kate Spade','Armani','Oakley','Persol','Celine','Alexander McQueen','Moncler','Valentino','Ferragamo','Maui Jim','Tory Burch','Givenchy','Off-White','Gentle Monster','Warby Parker','Tommy Hilfiger','Guess','Boss','Escada','Roberto Cavalli','Vogue Eyewear','Police','Moschino','Swarovski','Luxury Cat Eye Frames','Oversized Glam Frames','Tinted Fashion Frames','Diamond Frame Glasses','Custom Glasses']),
+      profession: withNone(['Student','Pastor','Content Creator','Nurse','Boss Babe','Teacher','Doctor','Lawyer','Entrepreneur','Business Woman','Business Man','Therapist','Fashion Designer','Makeup Artist','Hair Stylist','Chef','Baker','Photographer','Influencer','Podcaster','Streamer','Gamer','Artist','Singer','Rapper','Actress','Actor','Dancer','Model','Flight Attendant','Pilot','Police Officer','Firefighter','Paramedic','Social Worker','Author','Coach','Fitness Trainer','Real Estate Agent','Event Planner','Party Planner','Barista','Cashier','Retail Worker','Scientist','Dentist','Pharmacist','Veterinarian','Church Lady','Custom Role']),
+      scenario: withNone(['Bedroom Scene','Airport Travel','Classroom','Luxury Studio','Street Scene','Coffee Shop','Office Setting','Church Scene','Birthday Party','Prom Night','Wedding Day','Baby Shower','Beach Vacation','Poolside Scene','Shopping Mall','Boutique Scene','Salon Scene','Nail Shop','Photo Studio','Glam Room','School Hallway','Library','Playground','Picnic Scene','Garden Scene','Winter Wonderland','Fall Leaves Scene','Summer Day Scene','Spring Floral Scene','Car Ride','Jet Setting Scene','Hotel Lobby','Vacation Resort','Rooftop Scene','City Night Scene','Soft Home Scene','Kitchen Scene','Laundry Room Scene','Craft Room','Dance Studio','Red Room','90s Theme','Disco Theme','Night Club','Retro Party','Neon Room','VIP Room','Urban Loft','Soft Pink Room','Dream Room']),
+      action: withNone(['Standing','Waving','Holding Props','Blowing Kiss','Walking','Sitting','Jumping','Posing','Hands on Hips','Looking Back','Peace Sign','Taking Selfie','Running','Dancing','Praying','Reading','Typing on Laptop','Holding Coffee','Holding Flowers','Shopping','Talking on Phone','Driving','Flying Kiss','Looking Over Shoulder','Crossed Arms','One Hand Up','Both Hands Up','Holding Purse','Holding Pet','Pointing','Laughing','Smiling','Sassy Pose','Model Walk','Twirling','Leaning','Kneeling','Seated Glam Pose','Holding Bible','Holding Microphone','Teaching Pose','Doctor Pose','Nurse Pose','Boss Babe Pose','Princess Pose','Superhero Pose','Soft Girl Pose','Bratz Pose','Chibi Pose','Custom Action']),
+      expression: withNone(['Confident','Focused','Wink','Happy','Soft Smile','Big Smile','Neutral','Serious','Sassy','Playful','Sweet','Dreamy','Bold','Glamorous','Cute','Bossy','Relaxed','Joyful','Flirty','Calm','Excited','Proud','Shy','Innocent','Peaceful','Laughing','Smirking','Strong','Determined','Soft Glam Face','Princess Smile','Doll Like','Angelic','Radiant','Chill','Stylish','Curious','Content','Blessed','Thankful','Elegant','Pretty','Cute Little Smile','Big Energy','Sparkly','Bratz Attitude','Chibi Cute','Luxury Look','Premium Expression','Custom Expression']),
+      vibe: withNone(['Luxury','Bold and Pretty','Whimsical','Girly','Trendy','Soft Girl','Boss Babe','Elegant','Classy','Playful','Cute','High Fashion','Street Chic','Princess','Faith Filled','Pretty in Pink','Rich Girl','Clean Girl','Vacation Energy','Birthday Queen','Prom Princess','Soft Glam','Celebrity Energy','Confident','Sweet and Soft','Dreamy','Warm and Cozy','Summer Fun','Fall Fashion','Winter Glam','Spring Fresh','Church Ready','Professional','Editorial','Bratz Energy','Chibi Energy','Rhinestone Glam','Cowgirl Chic','Beach Babe','City Girl','Power Move','Soft Luxury','Pink Dream','Golden Glow','Romantic','Fierce','Polished','Standout Seller Look','Premium Detail','Custom Vibe']),
+      cameraAngle: withNone(['Full Body','Wide Shot','Close Up','Portrait Shot','Head Shot','Upper Body','Three Quarter View','Overhead Shot','Low Angle','High Angle','Side View','Front View','Back View','Over the Shoulder','Top Down View','Full Scene View','Waist Up','Knee Up','Foot Focus Shot','Face Focus Shot','Beauty Shot','Product Shot','Sticker Sheet View','Character Sheet View','Walking Shot','Action Shot','Editorial Angle','Runway Angle','Studio Angle','Outdoor Angle','Luxury Ad Angle','Profile View','Half Turn View','Dynamic Angle','Centered Shot','Zoomed Out','Zoomed In','Soft Portrait Angle','Boss Babe Angle','Princess Portrait','Chibi Front View','Bratz Camera Angle','Cute Close Up','Fashion Shot','Street Style Shot','Vacation Photo Angle','Glam Shot','Premium Seller Angle','Collector View','Custom Camera Angle']),
+      lighting: withNone(['Luxury Shine','Bright Daylight','Soft Studio Lighting','Cinematic Lighting','Clean Product Lighting','Golden Hour','Soft Glow','Warm Glow','Cool Glow','Spotlight','Ring Light','Natural Window Light','Pink Glow','Purple Glow','Blue Neon','Sunset Lighting','Morning Light','Evening Glow','High Fashion Lighting','Editorial Lighting','Beauty Lighting','Glossy Lighting','High Contrast Lighting','Soft Contrast Lighting','Dramatic Lighting','Bright White Lighting','Angel Glow','Princess Glow','Rich Glow','Premium Shine','Flash Photography','Studio Flash','Outdoor Sunlight','Cloudy Soft Light','Rainy Mood Light','Holiday Sparkle Light','Luxury Boutique Light','Runway Light','Party Lighting','Photo Booth Light','Romantic Glow','Soft Glam Light','Chibi Lighting','Bratz Lighting','Rhinestone Sparkle Light','Golden Sparkle Light','Dreamy Glow Light','Face Card Lighting','Seller Ready Lighting','Custom Lighting']),
+      artStyle: withNone(['Exaggerated Chibi','Bratz Chibi','Watercolor Sticker','Digital Art','Vector Art','Realistic Doll Art','3D Doll Art','Pixar Inspired','Cartoon Style','Soft Cartoon','Kawaii Style','Anime Inspired','Fashion Illustration','Luxury Illustration','Sticker Sheet Style','Printable Clipart Style','Glossy Doll Style','Premium Seller Style','Watercolor Painting','Oil Painting','Acrylic Paint Style','Pastel Illustration','Marker Illustration','Colored Pencil Style','Sketch Style','Line Art','Fantasy Art','Fairy Tale Style','Mermaid Fantasy','Soft Glam Art','Editorial Art','Rhinestone Bling Style','Paper Doll Style','Cute Plush Style','Collector Doll Style','Bratz Fashion Style','High Detail Character Art','Soft Storybook Style','Modern Cartoon','Vintage Cartoon','Girly Sticker Style','Bold Graphic Style','Hyper Feminine Art','Luxury Brand Style','Y2K Doll Style','Barbie Inspired Style','Photo Real Blend Style','Clean SVG Style','Product Mockup Style','Custom Art Style']),
+      finish: withNone(['Transparent PNG','Die Cut Sticker','Glossy Finish','Premium Seller Detail','Clean Edges','Print Ready','High Resolution','300 DPI Finish','Sticker Sheet Finish','Clipart Finish','Collector Doll Finish','Luxury Product Finish','Polished Finish','Smooth Finish','Bright Finish','Matte Finish','Soft Gloss Finish','Glass Shine Finish','Sparkle Finish','Rhinestone Finish','Premium Print Finish','No Background Finish','White Outline Sticker Finish','Transparent Background','Merch Ready Finish','Canva Ready Finish','Etsy Ready Finish','Stan Store Ready Finish','Seller Ready Finish','Clean Cut Finish','Crisp Outline Finish','Studio Quality Finish','High Detail Finish','Photo Ready Finish','Poster Ready Finish','Product Ready Finish','Digital Download Finish','PNG Bundle Finish','Printable Finish','Luxury Shine Finish','Premium Gloss Finish','Soft Matte Finish','Gold Foil Finish','Sparkle Outline Finish','Cute Sticker Finish','Bold Product Finish','Thumbnail Ready Finish','Marketplace Ready Finish','Collector Ready Finish','Custom Finish']),
+      petType: withNone(['Dog','Cat','Bunny','Horse','Pony','Hamster','Guinea Pig','Bird','Parrot','Duck','Chicken','Lamb','Baby Goat','Mini Pig','Ferret','Chinchilla','Hedgehog','Turtle','Fish','Goldfish','Betta Fish','Snake','Lizard','Gecko','Frog','Monkey','Panda','Tiger Cub','Lion Cub','Elephant Baby','Giraffe','Zebra','Fox','Wolf','Deer','Koala','Kangaroo','Sloth','Unicorn','Dragon','Fantasy Pet','Robot Pet','Stuffed Plush Pet','Cartoon Pet','Alien Pet','Mythical Creature','Hybrid Pet','Custom Pet']),
+      petBreed: withNone(['Toy Poodle','Standard Poodle','French Bulldog','English Bulldog','Yorkshire Terrier','Maltese','Shih Tzu','Pomeranian','Chihuahua','Mini Goldendoodle','Goldendoodle','Labrador Retriever','Golden Retriever','German Shepherd','Siberian Husky','Boxer','Rottweiler','Pit Bull','Doberman','Corgi','Beagle','Dachshund','Boston Terrier','Cane Corso','Great Dane','Bichon Frise','Cavalier King Charles','Pug','Border Collie','Australian Shepherd','Persian Cat','Siamese Cat','Bengal Cat','Maine Coon','Ragdoll','Sphynx Cat','Tabby Cat','Calico Cat','Black Cat','White Cat','Lop Bunny','Mini Bunny','Lovebird','Parakeet','Cockatiel','Mini Horse','Pony','Baby Goat','Fantasy Breed','Custom Breed']),
+      petSize: withNone(['Tiny','Teacup','Extra Small','Small','Small Medium','Medium','Medium Large','Large','Extra Large','Pocket Sized','Miniature','Standard','Fluffy Small','Tall Small','Compact','Round and Cute','Slim Pet','Chunky Pet','Puppy Size','Kitten Size','Young Pet','Adult Pet','Giant Breed','Tiny Fashion Pet','Luxury Pet Size','Travel Size Pet','Lap Pet','Shoulder Pet','Floor Length Fluffy','Soft Plush Size','Micro Pet','Mini Designer Pet','Classic Small','Perfect Medium','Strong Large','Oversized Cute','Princess Pet Size','Boss Pet Size','Tiny Companion','Soft Giant','Cute Compact','Elegant Pet Size','Premium Pet Size','Photo Ready Pet Size','Toy Sized','Medium Fluffy','Big Fluffy','Small Elegant','Large Regal','Custom Pet Size']),
+      petStyle: withNone(['Luxury Pet','Cute Pet','Princess Pet','Boss Pet','Street Pet','Soft Pet','Elegant Pet','Fancy Pet','Royal Pet','Glam Pet','Cozy Pet','Sporty Pet','Preppy Pet','Y2K Pet','Retro Pet','90s Pet','Disco Pet','Cowgirl Pet','Western Pet','Church Pet','Vacation Pet','Beach Pet','Birthday Pet','Holiday Pet','Pink Pet','Purple Pet','Gold Pet','Rhinestone Pet','Glitter Pet','Bow Pet','Designer Pet','Matching Pet','Fashion Pet','High End Pet','Soft Plush Pet','Angelic Pet','Dreamy Pet','Photo Ready Pet','Premium Seller Pet','Fancy Fur Look','Glossy Fur Look','Curly Coat Look','Fluffy Coat Look','Short Coat Look','Long Coat Look','Sweet Face Pet','Sassy Pet','Bratz Pet','Chibi Pet','Custom Pet Style']),
+      petAccessories: withNone(['Bow','Collar','Leash','Harness','Bandana','Pearl Collar','Gold Chain Collar','Rhinestone Collar','Tiny Purse','Pet Sunglasses','Pet Hat','Flower Crown','Pet Hoodie','Pet Scarf','Pet Boots','Pet Socks','Princess Tiara','Crown','Charm Tag','Heart Tag','Luxury Carrier','Travel Bag','Pet Blanket','Pet Pillow','Pet Necklace','Pet Bracelet','Pet Hair Bow','Double Bows','Ribbon Bow','Holiday Bow','Birthday Hat','Mini Backpack','Bow Tie','Tux Bow','Sparkle Tag','Custom Name Tag','Bell Collar','Gold Bell Collar','Designer Harness','Gem Collar','Soft Harness','Matching Leash','Pet Watch Look','Pet Anklet Look','Photo Prop Bow','Tiny Crown','Luxury Charm','Soft Glam Accessory','Premium Pet Accessory','Custom Pet Accessory']),
+      petOutfitMatch: withNone(['Matching Denim','Matching Pink Outfit','Matching Purple Outfit','Matching Gold Look','Matching Luxury Look','Matching Streetwear','Matching Church Look','Matching Vacation Look','Matching Birthday Look','Matching Pajama Set','Matching Bow Look','Matching Rhinestone Look','Matching Glitter Look','Matching Cowgirl Look','Matching Western Look','Matching Princess Look','Matching Soft Girl Look','Matching Boss Babe Look','Matching Y2K Look','Matching Retro Look','Matching 90s Look','Matching Disco Look','Matching Winter Outfit','Matching Spring Floral','Matching Summer Set','Matching Fall Fashion','Matching Tracksuit','Matching Hoodie Set','Matching Glam Look','Matching Elegant Look','Matching Black and Gold','Matching White Outfit','Matching Red Look','Matching Blue Look','Matching Green Look','Matching Floral Print','Matching Plaid Print','Matching Monogram Look','Matching Designer Look','Matching Beachwear','Matching Cozy Set','Matching Holiday Look','Matching Angel Look','Matching Dreamy Look','Matching Airport Look','Matching Boutique Look','Matching Photo Shoot Look','Matching Premium Style','Matching Soft Luxury','Custom Match']),
+      props: withNone(['Coffee Cup','Bible','Gift Box','Phone','Laptop','Flowers','Shopping Bags','Microphone','Passport','Suitcase','Camera','Tripod','Makeup Brush','Designer Bag','Balloons','Books','Pen','Notebook','Stethoscope','Clipboard','Teacher Pointer','Baby Bottle','Teddy Bear','Heart Balloon','Rose Bouquet','Ice Cream','Cupcake','Birthday Cake','Wine Glass','Juice Cup','Water Bottle','Headphones','Gaming Controller','Tablet','Ring Light','Handbag','Keys','Bible Journal','Prayer Book','Sunglasses Case','Perfume Bottle','Lip Gloss','Shopping Cart','Mop Bucket','Laundry Basket','Craft Supplies','Paint Brush','Flower Crown','Award Trophy','Handcuffs'])
+    };
+
+    const accessoryOptions = ['Earrings','Luxury Purse','Watch','Sunglasses','Headphones','Scarf','Belt','Chain','Whip','Backpack','Anklet','Bracelet','Bangles','Necklace','Diamond Necklace','Pearl Necklace','Cross Necklace','Gold Hoop Earrings','Stud Earrings','Drop Earrings','Waist Chain','Body Chain','Nose Ring','Toe Ring','Luxury Watch','Smart Watch','Hair Bow','Flower Crown','Headband','Bandana','Beanie','Cowgirl Hat','Sun Hat','Bucket Hat','Baseball Cap','Tiara','Crown','Gloves','Fishnet Gloves','Leg Warmers','Thigh Bag','Mini Purse','Tote Bag','Clutch','Designer Bag Charm','Hair Clips','Pearl Clips','Butterfly Clips','Phone Case','Makeup Bag'];
+
+    const fields = ['artStyle','subjectType','ageGroup','imageCount','raceEthnicity','skinTone','skinFinish','bodyType','inclusiveDetail','eyeShape','eyeColor','eyeStyle','eyebrowStyle','noseStyle','lipStyle','lipColor','teethStyle','facialFeatures','makeupStyle','makeupColor','facePiercings','tattooStyle','designer','hairType','hairColor','hairLength','hairDetails','outfit','outfitStyle','tops','bottoms','pattern','shoeType','brandShoes','brandPurse','designerGlasses','profession','scenario','action','expression','vibe','cameraAngle','lighting','finish','petType','petBreed','petSize','petStyle','petAccessories','petOutfitMatch','extraDetails','customAddOn'];
+
+    const sectionMap = {
+      subject: ['artStyle','subjectType','ageGroup','imageCount','raceEthnicity','skinTone','skinFinish','bodyType','inclusiveDetail'],
+      face: ['eyeShape','eyeColor','eyeStyle','eyebrowStyle','noseStyle','lipStyle','lipColor','teethStyle','facialFeatures','makeupStyle','makeupColor','facePiercings','tattooStyle','designer'],
+      hair: ['hairType','hairColor','hairLength','hairDetails'],
+      fashion: ['outfit','outfitStyle','tops','bottoms','pattern','shoeType','brandShoes','brandPurse','designerGlasses'],
+      scene: ['profession','scenario','action','expression','vibe','cameraAngle','lighting','finish','extraDetails','customAddOn'],
+      pets: ['petType','petBreed','petSize','petStyle','petAccessories','petOutfitMatch']
+    };
+
+    function fillSelect(id, options) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = options.map(opt => `<option>${opt}</option>`).join('');
+    }
+
+    function fillAllSelects() {
+      Object.entries(optionSets).forEach(([id, options]) => fillSelect(id, options));
+    }
+
+    function renderChipGrid(containerId, options, className, countId, maxSelections) {
+      const wrap = document.getElementById(containerId);
+      wrap.innerHTML = options.filter(o => o !== 'None').map(item => `
+        <label class="chip">
+          <input type="checkbox" class="${className}" value="${item}" />
+          <span>${item}</span>
+        </label>
+      `).join('');
+      wrap.querySelectorAll(`.${className}`).forEach(box => {
+        box.addEventListener('change', () => {
+          const checked = [...document.querySelectorAll(`.${className}:checked`)];
+          if (checked.length > maxSelections) {
+            box.checked = false;
+            return;
+          }
+          document.getElementById(countId).textContent = `${checked.length} of ${maxSelections} selected`;
+        });
+      });
+      document.getElementById(countId).textContent = `0 of ${maxSelections} selected`;
+    }
+
+    function getCheckedValues(className) {
+      return [...document.querySelectorAll(`.${className}:checked`)].map(el => el.value);
+    }
+
+    function clearCheckedValues(className, countId, maxSelections) {
+      document.querySelectorAll(`.${className}`).forEach(box => box.checked = false);
+      document.getElementById(countId).textContent = `0 of ${maxSelections} selected`;
+    }
+
+    function getValue(id) {
+      const el = document.getElementById(id);
+      if (!el) return '';
+      return el.value.trim();
+    }
+
+    function labelize(id) {
+      const labels = {
+        artStyle: 'Art Style', subjectType: 'Subject Type', ageGroup: 'Age Group', imageCount: 'Image Count', raceEthnicity: 'Race / Ethnicity', skinTone: 'Skin Tone', skinFinish: 'Skin Finish', bodyType: 'Body Type', inclusiveDetail: 'Inclusive Detail',
+        eyeShape: 'Eye Shape', eyeColor: 'Eye Color', eyeStyle: 'Eye Style', eyebrowStyle: 'Eyebrow Style', noseStyle: 'Nose Style', lipStyle: 'Lip Style', lipColor: 'Lip Color', teethStyle: 'Teeth Style', facialFeatures: 'Facial Features', makeupStyle: 'Makeup Style', makeupColor: 'Makeup Color', facePiercings: 'Face Piercings', tattooStyle: 'Tattoo Style', designer: 'Designer',
+        hairType: 'Hair Type', hairColor: 'Hair Color', hairLength: 'Hair Length', hairDetails: 'Hair Details',
+        outfit: 'Outfit', outfitStyle: 'Outfit Style', tops: 'Tops / Shirts', bottoms: 'Pants / Bottoms', pattern: 'Pattern', shoeType: 'Shoe Type', brandShoes: 'Brand Shoes', brandPurse: 'Brand Purse', designerGlasses: 'Designer Glasses',
+        profession: 'Profession or Role', scenario: 'Scenario', action: 'Action', expression: 'Expression', vibe: 'Vibe', cameraAngle: 'Camera Angle', lighting: 'Lighting', finish: 'Finish',
+        petType: 'Pet Type', petBreed: 'Pet Breed', petSize: 'Pet Size', petStyle: 'Pet Style', petAccessories: 'Pet Accessories', petOutfitMatch: 'Pet Outfit Match',
+        extraDetails: 'Extra Details', customAddOn: 'Custom Add On'
+      };
+      return labels[id] || id;
+    }
+
+    function buildPrompt() {
+      const lines = [];
+      const artStyle = getValue('artStyle');
+      lines.push(`Create a premium ${artStyle && artStyle !== 'None' ? artStyle : 'character'} design with the following details:`);
+      lines.push('');
+
+      fields.forEach(id => {
+        const value = getValue(id);
+        if (value && value !== 'None') lines.push(`${labelize(id)}: ${value}.`);
+      });
+
+      const accessories = getCheckedValues('accessory-checkbox');
+      if (accessories.length) lines.push(`Accessories: ${accessories.join(', ')}.`);
+
+      const props = getCheckedValues('prop-checkbox');
+      if (props.length) lines.push(`Props: ${props.join(', ')}.`);
+
+      lines.push('');
+      lines.push('Add polished lighting, clean edges, strong detail, standout visual appeal, premium seller detail, and a high-end finished look.');
+      return lines.join('\n');
+    }
+
+    function generatePrompt() {
+      document.getElementById('promptOutput').textContent = buildPrompt();
+    }
+
+    function clearAll() {
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+      clearCheckedValues('accessory-checkbox', 'accessoriesCount', 6);
+      clearCheckedValues('prop-checkbox', 'propsCount', 6);
+      document.getElementById('promptOutput').textContent = 'Your prompt will appear here.';
+      document.getElementById('favoriteName').value = '';
+    }
+
+    function randomChoice(options) {
+      const usable = options.filter(x => x !== 'None');
+      return usable[Math.floor(Math.random() * usable.length)] || 'None';
+    }
+
+    function randomizeForm() {
+      Object.entries(optionSets).forEach(([id, options]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = randomChoice(options);
+      });
+
+      clearCheckedValues('accessory-checkbox', 'accessoriesCount', 6);
+      clearCheckedValues('prop-checkbox', 'propsCount', 6);
+
+      const shuffledAccessories = [...accessoryOptions].sort(() => Math.random() - 0.5).slice(0, 6);
+      document.querySelectorAll('.accessory-checkbox').forEach(box => { box.checked = shuffledAccessories.includes(box.value); });
+      document.getElementById('accessoriesCount').textContent = '6 of 6 selected';
+
+      const propPool = optionSets.props.filter(x => x !== 'None');
+      const shuffledProps = [...propPool].sort(() => Math.random() - 0.5).slice(0, 6);
+      document.querySelectorAll('.prop-checkbox').forEach(box => { box.checked = shuffledProps.includes(box.value); });
+      document.getElementById('propsCount').textContent = '6 of 6 selected';
+
+      document.getElementById('extraDetails').value = 'Realistic Face Detail, Glossy Finish, Clean Edges, High Detail';
+      generatePrompt();
+    }
+
+    function copyPrompt() {
+      navigator.clipboard.writeText(document.getElementById('promptOutput').textContent);
+    }
+
+    function resetSection(section) {
+      (sectionMap[section] || []).forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+      if (section === 'fashion') {
+        clearCheckedValues('accessory-checkbox', 'accessoriesCount', 6);
+        clearCheckedValues('prop-checkbox', 'propsCount', 6);
+      }
+      generatePrompt();
+    }
+
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem('udg_favorites') || '[]');
+    }
+
+    function setFavorites(favorites) {
+      localStorage.setItem('udg_favorites', JSON.stringify(favorites.slice(0, 6)));
+    }
+
+    function saveFavorite() {
+      const prompt = buildPrompt();
+      const name = document.getElementById('favoriteName').value.trim() || `Prompt ${getFavorites().length + 1}`;
+      const favorites = getFavorites();
+      favorites.unshift({ name, prompt, createdAt: new Date().toISOString() });
+      setFavorites(favorites);
+      renderFavorites();
+    }
+
+    function loadFavorite(index) {
+      const favorite = getFavorites()[index];
+      if (!favorite) return;
+      document.getElementById('promptOutput').textContent = favorite.prompt;
+      document.getElementById('favoriteName').value = favorite.name;
+    }
+
+    function deleteFavorite(index) {
+      const favorites = getFavorites();
+      favorites.splice(index, 1);
+      setFavorites(favorites);
+      renderFavorites();
+    }
+
+    function exportFavorites() {
+      const favorites = getFavorites();
+      const blob = new Blob([JSON.stringify(favorites, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'ultimate-doll-generator-favorites.json';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function resetFavorites() {
+      localStorage.removeItem('udg_favorites');
+      renderFavorites();
+    }
+
+    function renderFavorites() {
+      const wrap = document.getElementById('favoritesList');
+      const search = document.getElementById('favoriteSearch').value.trim().toLowerCase();
+      const favorites = getFavorites().filter(item => !search || item.name.toLowerCase().includes(search) || item.prompt.toLowerCase().includes(search));
+
+      if (!favorites.length) {
+        wrap.innerHTML = '<div class="favorite-item">No saved prompts yet.</div>';
+        return;
+      }
+
+      wrap.innerHTML = favorites.map((item, index) => `
+        <div class="favorite-item">
+          <strong>${item.name}</strong>
+          <div>${item.prompt.slice(0, 180)}${item.prompt.length > 180 ? '...' : ''}</div>
+          <div class="favorite-actions">
+            <button class="mini-btn" onclick="loadFavorite(${index})">Load</button>
+            <button class="mini-btn" onclick="navigator.clipboard.writeText(${JSON.stringify(item.prompt)})">Copy</button>
+            <button class="mini-btn" onclick="deleteFavorite(${index})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generatePrompt);
+    document.getElementById('randomizeBtn').addEventListener('click', randomizeForm);
+    document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+    document.getElementById('clearBtn').addEventListener('click', clearAll);
+    document.getElementById('saveFavoriteBtn').addEventListener('click', saveFavorite);
+    document.getElementById('exportFavoritesBtn').addEventListener('click', exportFavorites);
+    document.getElementById('resetFavoritesBtn').addEventListener('click', resetFavorites);
+    document.getElementById('favoriteSearch').addEventListener('input', renderFavorites);
+    document.querySelectorAll('[data-reset-section]').forEach(btn => btn.addEventListener('click', () => resetSection(btn.dataset.resetSection)));
+
+    fillAllSelects();
+    renderChipGrid('accessoriesGrid', accessoryOptions, 'accessory-checkbox', 'accessoriesCount', 6);
+    renderChipGrid('propsGrid', optionSets.props, 'prop-checkbox', 'propsCount', 6);
+    renderFavorites();
+  </script>
+</body>
+</html>
