@@ -267,13 +267,107 @@
       .hero h1 { font-size: 28px; }
       .chip-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     }
+
+
+    body.vip-locked { overflow: hidden; }
+
+    #vipGate {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,246,251,.98) 0%, rgba(249,239,255,.98) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: 24px;
+    }
+
+    .vip-card {
+      width: 100%;
+      max-width: 430px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(172, 104, 183, 0.22);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .vip-card h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      color: var(--accent2);
+    }
+
+    .vip-brand {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: .3px;
+    }
+
+    .vip-card p {
+      color: var(--muted);
+      margin: 0 0 16px;
+      line-height: 1.5;
+    }
+
+    .vip-input {
+      width: 100%;
+      border: 1px solid #e7c9f2;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .vip-button {
+      width: 100%;
+    }
+
+    .brand-credit {
+      text-align: center;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .brand-credit strong {
+      color: var(--accent2);
+    }
+
+    .vip-error {
+      min-height: 18px;
+      margin-top: 10px;
+      color: #d64242;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 <body>
+
+  <div id="vipGate">
+    <div class="vip-card">
+      <h2>VIP Access</h2>
+      <div class="vip-brand">Created by Jazzarai's Creations</div>
+      <p>Enter your access code to open the Ultimate Doll Generator.</p>
+      <input id="vipPassword" class="vip-input" type="password" placeholder="Enter password" autocomplete="off" />
+      <button class="btn vip-button" onclick="unlockGenerator()">Enter Generator</button>
+      <div id="vipError" class="vip-error"></div>
+    </div>
+  </div>
+
   <div class="app">
     <section class="hero">
       <h1>Ultimate Doll Generator</h1>
       <p>Build premium, detailed character prompts with your layout, your sections, and one clean master version.</p>
+      <div class="brand-credit">Created by <strong>Jazzarai's Creations</strong></div>
     </section>
 
     <div class="grid">
@@ -437,6 +531,36 @@
   </div>
 
   <script>
+
+
+    const VIP_PASSWORD = "VIP828";
+    const VIP_STORAGE_KEY = "ultimate_doll_generator_access";
+
+    function showGate() {
+      document.body.classList.add('vip-locked');
+      const gate = document.getElementById('vipGate');
+      if (gate) gate.style.display = 'flex';
+    }
+
+    function hideGate() {
+      document.body.classList.remove('vip-locked');
+      const gate = document.getElementById('vipGate');
+      if (gate) gate.style.display = 'none';
+    }
+
+    function unlockGenerator() {
+      const input = document.getElementById('vipPassword');
+      const error = document.getElementById('vipError');
+      const value = (input?.value || '').trim();
+
+      if (value === VIP_PASSWORD) {
+        localStorage.setItem(VIP_STORAGE_KEY, 'granted');
+        hideGate();
+      } else {
+        if (error) error.textContent = 'Incorrect password. Please try again.';
+      }
+    }
+
     function withNone(arr) {
       const list = ['None', ...arr];
       return list.slice(0, 51);
@@ -468,7 +592,7 @@
       tattooStyle: withNone(['Fine Line Tattoo','Micro Tattoo','Butterfly Tattoo','Rose Tattoo','Heart Tattoo','Star Tattoo','Moon Tattoo','Sun Tattoo','Cross Tattoo','Angel Wings Tattoo','Name Tattoo','Script Tattoo','Sleeve Tattoo','Half Sleeve Tattoo','Full Back Tattoo','Shoulder Tattoo','Collarbone Tattoo','Chest Tattoo','Hand Tattoo','Finger Tattoo','Neck Tattoo','Leg Tattoo','Thigh Tattoo','Ankle Tattoo','Wrist Tattoo','Spine Tattoo','Floral Tattoo','Snake Tattoo','Lion Tattoo','Crown Tattoo','Praying Hands Tattoo','Bible Verse Tattoo','Cloud Tattoo','Dove Tattoo','Cherry Tattoo','Money Tattoo','Butterfly Sleeve','Minimalist Tattoo','Bold Blackwork Tattoo','Soft Feminine Tattoo','Luxury Tattoo','Tiny Symbol Tattoo','Heart Lock Tattoo','Diamond Tattoo','Starburst Tattoo','Barbed Wire Tattoo','Fairy Tattoo','Angel Number Tattoo','Custom Ink Design','No Tattoo']),
       designer: withNone(['Gucci','Dior','Chanel','Prada','Louis Vuitton','Versace','Balenciaga','Fendi','Valentino','Hermes','Burberry','Miu Miu','YSL','Givenchy','Dolce & Gabbana','Bottega Veneta','Tom Ford','Jacquemus','Celine','Moncler','Alexander McQueen','Christian Louboutin','Jimmy Choo','Ferragamo','Tory Burch','Marc Jacobs','Michael Kors','Coach','Kate Spade','Off-White','Lanvin','Cartier','Bvlgari','Tiffany & Co.','Rolex','Swarovski','Golden Goose','Canada Goose','Loewe','Goyard','Staud','Rebecca Minkoff','Dooney & Bourke','Brahmin','MCM','Aldo Luxe','Nine West Luxe','Juicy Couture','Betsey Johnson','Custom Designer']),
       hairType: withNone(['Locs','Twists','Braids','Puff Ponytail','Finger Waves','Silk Press','Curly Bob','Sleek Bun','High Ponytail','Low Ponytail','Box Braids','Knotless Braids','Passion Twists','Marley Twists','Goddess Braids','Cornrows','Afro','Curly Afro','Wash and Go','Pixie Cut','Bob Cut','Long Straight Hair','Body Wave','Loose Curls','Tight Curls','Wand Curls','Space Buns','Half Up Half Down','Top Knot','Bantu Knots','French Roll','Side Ponytail','Bubble Ponytail','Dread Bun','Loc Ponytail','Soft Waves','Crimped Hair','Beach Waves','Flip Ends','Layered Cut','Fringe Bangs','Curtain Bangs','Side Bangs','Deep Side Part','Middle Part Hair','Updo','Princess Curls','Voluminous Curls','Mermaid Waves','Custom Hair Type']),
-      hairColor: withNone(['Black','Dark Brown','Light Brown','Auburn','Burgundy','Honey Blonde','Jet Black','Brown Black','Chestnut','Chocolate Brown','Mocha Brown','Caramel Brown','Golden Brown','Copper','Ginger','Strawberry Blonde','Ash Blonde','Platinum Blonde','Champagne Blonde','Dirty Blonde','Honey Brown','Warm Brown','Cool Brown','Red','Wine Red','Cherry Red','Rose Gold','Pink','Hot Pink','Lavender','Purple','Lilac','Blue','Teal','Aqua','Emerald','Silver','Gray','White Blonde','Ombre Brown Blonde','Black with Blonde Highlights','Brown with Caramel Highlights','Burgundy Highlights','Money Piece Blonde','Honey Highlights','Face Framing Highlights','Sun Kissed Brown','Cinnamon Brown','Soft Black','Custom Hair Color']),
+      hairColor: withNone(['Black','Dark Brown','Light Brown','Auburn','Burgundy','Honey Blonde','Jet Black','Brown Black','Chestnut','Chocolate Brown','Mocha Brown','Caramel Brown','Golden Brown','Copper','Ginger','Strawberry Blonde','Ash Blonde','Platinum Blonde','Champagne Blonde','Dirty Blonde','Honey Brown','Warm Brown','Cool Brown','Red','Wine Red','Cherry Red','Rose Gold','Pink','Hot Pink','Lavender','Purple','Lilac','Blue','Teal','Aqua','Emerald','Silver','Gray','White Blonde','Ombre Brown Blonde','Black with Blonde Highlights','Brown with Caramel Highlights','Burgundy Highlights','Money Piece Blonde','Honey Highlights','Face Framing Highlights','Sun Kissed Brown','Cinnamon Brown','Soft Black','Ombre Black to Blonde','Ombre Brown to Honey Blonde','Ombre Red to Orange','Ombre Pink to Purple','Ombre Blue to Teal','Half Black Half Blonde','Split Dye Pink and Blue','Split Dye Black and Red','Split Dye Purple and Silver','Rainbow Hair','Unicorn Hair Pastel Mix','Galaxy Hair (Blue Purple Black)','Neon Multi Color','Highlights Blonde Streaks','Highlights Caramel Streaks','Highlights Red Streaks','Highlights Platinum Streaks','Money Piece Colored Front','Dip Dye Ends Pink','Dip Dye Ends Blue','Dip Dye Ends Purple','Skunk Stripe Hair','Two Tone Hair','Three Tone Hair Blend','Custom Hair Color']),
       hairLength: withNone(['Bald','Buzz Cut','Very Short','Short','Short Bob','Chin Length','Neck Length','Shoulder Length','Collarbone Length','Medium','Medium Long','Long','Very Long','Waist Length','Hip Length','Floor Length','Pixie Length','Ear Length','Jaw Length','Lob Length','Bra Strap Length','Mid Back Length','Low Back Length','Knee Length Fantasy','Short Curly Length','Medium Curly Length','Long Curly Length','Short Locs','Medium Locs','Long Locs','Extra Long Locs','Short Braids','Medium Braids','Long Braids','Extra Long Braids','Short Ponytail','Medium Ponytail','Long Ponytail','Extra Long Ponytail','Short Twists','Medium Twists','Long Twists','Extra Long Twists','Short Waves','Medium Waves','Long Waves','Princess Long','Doll Length','Mermaid Length','Custom Hair Length']),
       hairDetails: withNone(['Laid Edges','Baby Hairs Styled','Defined Curls','Volume Boost','Side Part','Middle Part','Deep Side Part','Swooped Bangs','Curled Ends','Straight Ends','Wet Look Hair','Glossy Hair','Natural Texture','Silky Texture','Fluffy Volume','Big Hair Energy','Tiny Braids Detail','Beads in Hair','Hair Charms','Gold Cuffs','Silver Cuffs','Rose Gold Cuffs','Butterfly Clips','Barrettes','Headband','Bow Detail','Ribbon Detail','Flower Clips','Pearl Clips','Bun Wrap','Loc Jewelry','Braided Baby Hairs','Loose Tendrils','Face Framing Pieces','Layered Front Pieces','High Volume Roots','Slicked Down','Soft Frizz','Perfectly Defined Edges','Blowout Texture','Braided Part Pattern','Heart Part','Zigzag Part','Color Streaks','Highlight Pieces','Ombre Ends','Shadow Root','Bouncy Finish','Luxury Hair Shine','Custom Hair Detail']),
       outfit: withNone(['Business Casual','Streetwear','Luxury','Hip Hop Glam Outfit','Ballerina Outfit','Airport Travel Look','Church Dress','Birthday Outfit','Prom Dress','Vacation Set','Cozy Lounge Set','Denim Set','Boss Babe Suit','Pajama Set','Athleisure Set','Cowgirl Outfit','Cowboy Outfit','Princess Gown','Mermaid Outfit','Fairy Dress','Cheer Outfit','School Uniform','Nurse Scrubs','Doctor Coat','Teacher Outfit','Content Creator Fit','Date Night Dress','Winter Coat Look','Fall Fashion Look','Spring Floral Outfit','Summer Shorts Set','Beachwear','Wedding Guest Dress','Bride Look','Baby Shower Dress','Maternity Outfit','Maternity Dress','Maternity Lounge Set','Tracksuit','Luxury Robe','Fashion Nova Inspired Fit','Club Outfit','Elegant Skirt Set','Soft Girl Outfit','Preppy Outfit','Y2K Outfit','Retro 70s Outfit','90s Streetwear','Rhinestone Outfit','Jean Dress','Jumpsuit']),
@@ -738,6 +862,19 @@
     renderChipGrid('accessoriesGrid', accessoryOptions, 'accessory-checkbox', 'accessoriesCount', 6);
     renderChipGrid('propsGrid', optionSets.props, 'prop-checkbox', 'propsCount', 6);
     renderFavorites();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const hasAccess = localStorage.getItem(VIP_STORAGE_KEY) === 'granted';
+      if (hasAccess) hideGate();
+      else showGate();
+
+      const input = document.getElementById('vipPassword');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') unlockGenerator();
+        });
+      }
+    });
   </script>
 </body>
 </html>
